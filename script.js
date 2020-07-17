@@ -8,6 +8,11 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
+function showAttribution(image) {
+    const html = `Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
+    $('.attribution').html(html);
+}
+
 function getSizingString() {
     const params = {
         fm: "jpg",
@@ -68,6 +73,7 @@ async function getRandomImage(quote) {
         id:"",
         rawurl:"",
         userlink:"",
+        username:"",
         description:""
     }
     await fetch(url, options)
@@ -82,6 +88,7 @@ async function getRandomImage(quote) {
         image.id = responseJson.id;
         image.rawurl = responseJson.urls.raw;
         image.userlink = responseJson.user.links.html;
+        image.username = responseJson.user.name;
         image.description = responseJson.description;
     })
     .catch(err => {
@@ -118,6 +125,7 @@ async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
     buildQuotazo(image, quote);
+    showAttribution(image);
 }
 
 function watchRandomButton() {
