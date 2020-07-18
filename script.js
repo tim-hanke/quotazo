@@ -19,7 +19,10 @@ function getSizingString() {
         w: "1080",
         ar: "1:1",
         fit: "crop",
-        crop: "entropy"
+        crop: "faces,entropy",
+        // "blend-color": "50000000",
+        duotone:"000000,002228",
+        "duotone-alpha":"25"
     }
     const sizingString = formatQueryParams(params);
     return sizingString;
@@ -35,7 +38,7 @@ function getQuoteString(quote) {
         txtlead:"0",
         txtpad:"60",
         "txt-shad": "5",
-        bg:"55002228",
+        bg:"85002228",
         txtfont:"HelveticaNeue-Thin"
     }    
     const formattingString = formatQueryParams(paramsBox);
@@ -58,7 +61,7 @@ async function getRandomImage(quote) {
     console.log(`getRandomImage ran with quote: ${quote}`);
     const params = {
         // client_id: apiKey,
-        orientation: "squarish",
+        // orientation: "squarish",
         query: quote,
     }
     const queryString = formatQueryParams(params);
