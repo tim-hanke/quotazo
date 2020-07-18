@@ -34,7 +34,8 @@ function getQuoteString(quote) {
         txtsize: "60",
         txtlead:"0",
         txtpad:"60",
-        bg:"75002228",
+        "txt-shad": "5",
+        bg:"55002228",
         txtfont:"HelveticaNeue-Thin"
     }    
     const formattingString = formatQueryParams(paramsBox);
