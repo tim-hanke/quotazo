@@ -1,5 +1,7 @@
 const quoteSearchURL = "https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=jsonp&jsonp=jsonpCallback";
-const imageAPIURL = "https://api.unsplash.com/photos/random";
+const randomImageURL = "https://api.unsplash.com/photos/random";
+const specificImageURL = "https://api.unsplash.com/photos/"
+const textEndpointURL = "https://assets.imgix.net/~text";
 const apiKey = "2J86Mb_dvHxogT4Z-EpAk-Zo3BV6Z2KAE64u0wJKIc4"
 
 // the same formatting I used in me last project to
@@ -43,7 +45,6 @@ function getSizingString() {
 // it also encodes the string of parameters in base64 per
 // the imgix documentation
 function getQuoteString(quote) {
-    const textEndpointURL = "https://assets.imgix.net/~text";
     const paramsBox = {
         w: "900",
         txtclr: "fff",
@@ -88,7 +89,7 @@ async function getRandomImage(quote) {
         query: quote,
     }
     const queryString = formatQueryParams(params);
-    const url = imageAPIURL + '?' + queryString;
+    const url = randomImageURL + '?' + queryString;
     const options = {
         headers: new Headers({
           "Authorization": `Client-ID ${apiKey}`,
@@ -156,6 +157,47 @@ async function getRandomQuote() {
     }
 }
 
+async function getSpecificImage(id) {
+    const url = specificImageURL + id;
+    const options = {
+        headers: new Headers({
+          "Authorization": `Client-ID ${apiKey}`,
+          "Accept-Version": "v1"
+        }),
+        mode: "cors"
+    };
+    // this is an object for the bits of the response I'm interested in
+    const image = {
+        id:"",
+        rawurl:"",
+        userlink:"",
+        username:"",
+        description:""
+    }
+    await fetch(url, options)
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error(response.statusText);
+        }
+    })
+    .then(responseJson => {
+        image.id = responseJson.id;
+        image.rawurl = responseJson.urls.raw;
+        image.userlink = responseJson.user.links.html;
+        image.username = responseJson.user.name;
+        image.description = responseJson.description;
+    })
+    .catch(err => {
+        alert(`Something went wrong: ${err.message}`);
+    })
+    // console.log(image.rawurl);
+    // the function returns just the data I use, instead of the
+    // whole json response
+    return image;
+}
+
 // I seperated the retrieving of random quotes and images
 // from the image generator to make it easier to later add
 // the ability to generate an image (a quotazo) from a
@@ -163,11 +205,13 @@ async function getRandomQuote() {
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
+    console.log(`id:${image.id}`);
+    console.log(`quote:${encodeURIComponent(quote)}`);
     buildQuotazo(image, quote);
     showAttribution(image);
 }
 
-// When "random" button is clickec, called showRandomQuotazo
+// When "random" button is clicked, called showRandomQuotazo
 function watchRandomButton() {
     $('.randomButton').click(e => {
         // console.log("random button clicked");
@@ -175,7 +219,23 @@ function watchRandomButton() {
     });
 }
 
+// checks if URL parameters exist for an image id and a 
+// quote, and if they do, build and displays a quotazo
+// using them
+async function checkURLParams() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if (urlParams.has('q') || urlParams.has('id')) {
+        const quote = decodeURIComponent(urlParams.get('q'));
+        // console.log(`${image}, ${quote}`)
+        const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
+        buildQuotazo(image, quote);
+        showAttribution(image);
+    }
+}
+
 $(function() {
     // console.log("we're loaded")
+    checkURLParams();
     watchRandomButton();
 })
