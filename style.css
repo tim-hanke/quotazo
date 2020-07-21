@@ -13,8 +13,13 @@ main {
 }
 
 .quotazo-image {
+    height: 100%;
     width: 100%;
     max-width: 1080px;
+}
+
+.attribution {
+    text-align: center;
 }
 
 .hidden {
