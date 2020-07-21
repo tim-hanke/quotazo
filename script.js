@@ -12,20 +12,24 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
+function showFigure() {
+    $('figure').removeClass('hidden');
+}
+
 // generic function for any errors
 // shows a jokey error message image instead of a quotazo
 function showErrorImage() {
     $('.quotazo-image').attr({src:"images/error.jfif", alt:"Ooops! I couldn't find a fresh quote for you. Maybe the Internet is down! Please try again later. - Quotazo"});
-    $('.quotazo-image').removeClass('hidden');
     const html = `Photo by <a href="https://unsplash.com/@maxchen2k?utm_source=quotazo&utm_medium=referral">Max Chen</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
     $('.attribution').html(html);
+    showFigure();
 }
 
 // this creates a simple attribution link for the photographer
 // of the image and inserts it into the DOM
 // unsplash's API documentation says it's recommended,
 // not required, but it definitely seems like best practices
-function showAttribution(image) {
+function buildAttribution(image) {
     const html = `Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
     $('.attribution').html(html);
 }
@@ -79,7 +83,6 @@ function buildQuotazo(image, quote){
     const quoteString = getQuoteString(quote);
     const url = image.rawurl + '&' + sizingString + '&' + quoteString;
     $('.quotazo-image').attr({src:url, alt:image.description});
-    $('.quotazo-image').removeClass('hidden');
 }
 
 async function getRandomImage(quote) {
@@ -138,7 +141,9 @@ async function getRandomQuote() {
         });
         // the quote data sometimes comes with extraneous spaces,
         // so I'm using trin() to remove them
-        return `${response.quoteText.trim()} - ${response.quoteAuthor.trim()}`;
+        // also, sometimes the author field is blank. If so,
+        // we'll substitute in "Unknown"
+        return `${response.quoteText.trim()} - ${(response.quoteAuthor ? response.quoteAuthor.trim() : "Unknown")}`;
     } catch (err) {
         showErrorImage();
     }
@@ -193,7 +198,8 @@ async function showRandomQuotazo() {
     const image = await getRandomImage(quote);
     if (quote && image) {
         buildQuotazo(image, quote);
-        showAttribution(image);
+        buildAttribution(image);
+        showFigure();
     } else {    
         showErrorImage();    
     }
@@ -215,8 +221,13 @@ async function checkURLParams() {
     if (urlParams.has('q') && urlParams.has('id')) {
         const quote = decodeURIComponent(urlParams.get('q'));
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
-        buildQuotazo(image, quote);
-        showAttribution(image);
+        if (quote) {
+            buildQuotazo(image, quote);
+            buildAttribution(image);
+            showFigure();
+        } else {
+            showErrorImage();
+        }
     }
 }
 
