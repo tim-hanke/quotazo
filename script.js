@@ -1,4 +1,4 @@
-const quoteSearchURL = "https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=jsonp&jsonp=jsonpCallback";
+const quoteSearchURL = "https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=jsonp";
 const randomImageURL = "https://api.unsplash.com/photos/random";
 const specificImageURL = "https://api.unsplash.com/photos/"
 const textEndpointURL = "https://assets.imgix.net/~text";
@@ -10,6 +10,15 @@ function formatQueryParams(params) {
     const queryItems = Object.keys(params)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     return queryItems.join('&');
+}
+
+// generic function for any errors
+// shows a jokey error message image instead of a quotazo
+function showErrorImage() {
+    $('.quotazo-image').attr({src:"images/error.jfif", alt:"Ooops! I couldn't find a fresh quote for you. Maybe the Internet is down! Please try again later. - Quotazo"});
+    $('.quotazo-image').removeClass('hidden');
+    const html = `Photo by <a href="https://unsplash.com/@maxchen2k?utm_source=quotazo&utm_medium=referral">Max Chen</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
+    $('.attribution').html(html);
 }
 
 // this creates a simple attribution link for the photographer
@@ -121,7 +130,8 @@ async function getRandomImage(quote) {
         image.description = responseJson.description;
     })
     .catch(err => {
-        alert(`Something went wrong: ${err.message}`);
+        showErrorImage();
+        // alert(`Something went wrong: ${err.message}`);
     })
     // console.log(image.rawurl);
     // the function returns just the data I use, instead of the
@@ -129,31 +139,21 @@ async function getRandomImage(quote) {
     return image;
 }
 
-function jsonpCallback(response) {
-    // console.log(response.quoteText);
-    // console.log(response.quoteAuthor);
-    // return response.quoteText;
-}
-
 // the forismatic.com API doesn't return a Access-Control-Allow-Origin
 // header, in other words it doesn't do CORS, so I'm retrieving it
-// using a callback function (jsonpCallback() above)
-// and, to be honest, I'm not sure why the code works even though
-// the callback function is empty
+// using jQuery.ajax
 async function getRandomQuote() {
     try {
-        let quote;
-        await $.ajax({
+        const response = await $.ajax({
             url: quoteSearchURL,
             dataType: "jsonp",
-            jsonpCallback: "jsonpCallback"
-        })
-        .then(response => {
-            quote = `${response.quoteText}- ${response.quoteAuthor}`;
-        })
-        return quote;
+            jsonp: "jsonp"
+        });
+        // the quote data sometimes comes with extraneous spaces,
+        // so I'm using trin() to remove them
+        return `${response.quoteText.trim()} - ${response.quoteAuthor.trim()}`;
     } catch (err) {
-        console.error(err);
+        showErrorImage();
     }
 }
 
@@ -190,7 +190,8 @@ async function getSpecificImage(id) {
         image.description = responseJson.description;
     })
     .catch(err => {
-        alert(`Something went wrong: ${err.message}`);
+        showErrorImage();
+        // alert(`Something went wrong: ${err.message}`);
     })
     // console.log(image.rawurl);
     // the function returns just the data I use, instead of the
@@ -205,10 +206,17 @@ async function getSpecificImage(id) {
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
-    console.log(`id:${image.id}`);
-    console.log(`quote:${encodeURIComponent(quote)}`);
-    buildQuotazo(image, quote);
-    showAttribution(image);
+    if (quote && image) {
+        // console.log(`id:${image.id}`);
+        // console.log(`quote:${encodeURIComponent(quote)}`);
+        buildQuotazo(image, quote);
+        showAttribution(image);
+    } else {    
+        showErrorImage();    
+        // $('.js-error-message').text("Something happened. Try again.");
+        // $('.js-error-message').show();
+        // todo: hide image and caption
+    }
 }
 
 // When "random" button is clicked, called showRandomQuotazo
@@ -225,7 +233,7 @@ function watchRandomButton() {
 async function checkURLParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    if (urlParams.has('q') || urlParams.has('id')) {
+    if (urlParams.has('q') && urlParams.has('id')) {
         const quote = decodeURIComponent(urlParams.get('q'));
         // console.log(`${image}, ${quote}`)
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
