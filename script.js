@@ -41,7 +41,6 @@ function getSizingString() {
         ar: "1:1",
         fit: "crop",
         crop: "faces,entropy",
-        // "blend-color": "50000000",
         duotone:"000000,002228",
         "duotone-alpha":"25"
     }
@@ -68,9 +67,7 @@ function getQuoteString(quote) {
     const formattingString = formatQueryParams(paramsBox);
     const alignString = "center,middle"
     const quoteURL = `mark64=${btoa(textEndpointURL + '?' + formattingString)}&markalign64=${btoa(alignString)}`;
-    // console.log(quoteURL);
     return quoteURL;
-    // https://assets.imgix.net/~text?w=600&txtclr=fff&txt=“Sometimes+when+you+innovate,+you+make+mistakes.+It+is+best+to+admit+them+quickly,+and+get+on+with+improving+your+other+innovations.” — Steve Jobs&w=900&txtsize=40&txtlead=0&txtpad=60&bg=55002228&txtfont=HelveticaNeue-Thin
 }
 
 // the sizing/cropping of the background image, and the formatting/insertion
@@ -86,15 +83,7 @@ function buildQuotazo(image, quote){
 }
 
 async function getRandomImage(quote) {
-    // console.log(`getRandomImage ran with quote: ${quote}`);
     const params = {
-        // client_id: apiKey,
-        // I'm now including the API key in the header instead of URL
-        // orientation: "squarish",
-        // even with non-squarish images, the imgix crop function
-        // does a good good of centering the interesting parts
-        // of the image, and removing "squarish" widens
-        // the pool of results
         query: quote,
     }
     const queryString = formatQueryParams(params);
@@ -131,9 +120,7 @@ async function getRandomImage(quote) {
     })
     .catch(err => {
         showErrorImage();
-        // alert(`Something went wrong: ${err.message}`);
     })
-    // console.log(image.rawurl);
     // the function returns just the data I use, instead of the
     // whole json response
     return image;
@@ -191,9 +178,7 @@ async function getSpecificImage(id) {
     })
     .catch(err => {
         showErrorImage();
-        // alert(`Something went wrong: ${err.message}`);
     })
-    // console.log(image.rawurl);
     // the function returns just the data I use, instead of the
     // whole json response
     return image;
@@ -207,22 +192,16 @@ async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
     if (quote && image) {
-        // console.log(`id:${image.id}`);
-        // console.log(`quote:${encodeURIComponent(quote)}`);
         buildQuotazo(image, quote);
         showAttribution(image);
     } else {    
         showErrorImage();    
-        // $('.js-error-message').text("Something happened. Try again.");
-        // $('.js-error-message').show();
-        // todo: hide image and caption
     }
 }
 
 // When "random" button is clicked, called showRandomQuotazo
 function watchRandomButton() {
     $('.randomButton').click(e => {
-        // console.log("random button clicked");
         showRandomQuotazo();
     });
 }
@@ -235,7 +214,6 @@ async function checkURLParams() {
     const urlParams = new URLSearchParams(queryString);
     if (urlParams.has('q') && urlParams.has('id')) {
         const quote = decodeURIComponent(urlParams.get('q'));
-        // console.log(`${image}, ${quote}`)
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
         buildQuotazo(image, quote);
         showAttribution(image);
@@ -243,7 +221,6 @@ async function checkURLParams() {
 }
 
 $(function() {
-    // console.log("we're loaded")
     checkURLParams();
     watchRandomButton();
 })
