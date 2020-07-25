@@ -44,10 +44,12 @@ function getSizingString() {
         w: "1080",
         ar: "1:1",
         fit: "crop",
-        crop: "faces,entropy",
-        duotone:"000000,002228",
-        "duotone-alpha":"25"
+        crop: "entropy",
+        // border: `10,${bdrColor}`
+        // duotone:"000000,002228",
+        // "duotone-alpha":"25"
     }
+    console.log(params.border);
     const sizingString = formatQueryParams(params);
     return sizingString;
 }
@@ -59,13 +61,13 @@ function getSizingString() {
 function getQuoteString(quote) {
     const paramsBox = {
         w: "900",
-        txtclr: "fff",
+        txtclr: "ffffee",
         txt: quote,
         txtsize: "60",
         txtlead:"0",
         txtpad:"60",
         "txt-shad": "5",
-        bg:"85002228",
+        bg:"99000000",
         txtfont:"HelveticaNeue-Thin"
     }    
     const formattingString = formatQueryParams(paramsBox);
@@ -104,7 +106,8 @@ async function getRandomImage(quote) {
         rawurl:"",
         userlink:"",
         username:"",
-        description:""
+        description:"",
+        // bdrColor: ""
     }
     await fetch(url, options)
     .then(response => {
@@ -120,7 +123,7 @@ async function getRandomImage(quote) {
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
         image.description = responseJson.description;
-        console.log(image);
+        // image.bdrColor = "75" + responseJson.color.slice(1);
     })
     .catch(err => {
         showErrorImage();
@@ -165,7 +168,8 @@ async function getSpecificImage(id) {
         rawurl:"",
         userlink:"",
         username:"",
-        description:""
+        description:"",
+        // bdrColor:""
     }
     await fetch(url, options)
     .then(response => {
@@ -181,6 +185,7 @@ async function getSpecificImage(id) {
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
         image.description = responseJson.description;
+        // image.bdrColor = responseJson.bdrColor;
     })
     .catch(err => {
         showErrorImage();
@@ -197,7 +202,7 @@ async function getSpecificImage(id) {
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
-    console.log(image);
+    // console.log(image);
     if (quote && image) {
         buildQuotazo(image, quote);
         buildAttribution(image);
