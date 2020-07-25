@@ -120,13 +120,14 @@ async function getRandomImage(quote) {
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
         image.description = responseJson.description;
+        console.log(image);
     })
     .catch(err => {
         showErrorImage();
     })
+    return image;
     // the function returns just the data I use, instead of the
     // whole json response
-    return image;
 }
 
 // the forismatic.com API doesn't return a Access-Control-Allow-Origin
@@ -196,6 +197,7 @@ async function getSpecificImage(id) {
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
+    console.log(image);
     if (quote && image) {
         buildQuotazo(image, quote);
         buildAttribution(image);
