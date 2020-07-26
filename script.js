@@ -14,6 +14,7 @@ function formatQueryParams(params) {
 
 function showFigure() {
     $('figure').removeClass('hidden');
+    $('.tagline').addClass('hidden');
 }
 
 // generic function for any errors
@@ -41,6 +42,7 @@ function buildAttribution(image) {
 function getSizingString() {
     const params = {
         fm: "jpg",
+        auto: "format",
         w: "1080",
         ar: "1:1",
         fit: "crop",
@@ -49,7 +51,6 @@ function getSizingString() {
         // duotone:"000000,002228",
         // "duotone-alpha":"25"
     }
-    console.log(params.border);
     const sizingString = formatQueryParams(params);
     return sizingString;
 }
@@ -84,6 +85,7 @@ function buildQuotazo(image, quote){
     const sizingString = getSizingString();
     const quoteString = getQuoteString(quote);
     const url = image.rawurl + '&' + sizingString + '&' + quoteString;
+    console.log(image.description);
     $('.quotazo-image').attr({src:url, alt:image.description});
 }
 
