@@ -124,7 +124,7 @@ async function getRandomImage(quote) {
         image.rawurl = responseJson.urls.raw;
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
-        image.description = responseJson.description;
+        image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
         // image.bdrColor = "75" + responseJson.color.slice(1);
     })
     .catch(err => {
@@ -186,7 +186,7 @@ async function getSpecificImage(id) {
         image.rawurl = responseJson.urls.raw;
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
-        image.description = responseJson.description;
+        image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
         // image.bdrColor = responseJson.bdrColor;
     })
     .catch(err => {
