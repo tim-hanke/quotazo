@@ -45,6 +45,32 @@ h1 {
     font-family: 'Roboto Slab', serif;
 }
 
+.logo, .sharing-icon {
+    color: var(--highlight-color);    
+}
+
+.sharing-list {
+    width: 100%;
+    max-width: 600px;
+    padding: 0 25px 0 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style-type: none;
+
+}
+
+.sharing-icon {
+    font-size: 32px;
+    -webkit-transition: color .3s;
+    -moz-transition: color .3s;
+    -o-transition: color .3s;
+    transition: color .3s;
+}
+.sharing-icon:hover {
+    color: var(--highlight-hover-color)
+}
+
 main {
     max-width: 600px;
     margin: auto;
@@ -55,6 +81,10 @@ main {
 
 .button {
     background-color: var(--highlight-color);
+    -webkit-transition: background-color .3s;
+    -moz-transition: background-color .3s;
+    -o-transition: background-color .3s;
+    transition: background-color .3s;
     font-family: 'Roboto', sans-serif;
     font-size: 18px;
     font-weight: bold;
@@ -65,7 +95,8 @@ main {
     outline: none;
 }
 
-.button:hover, .button:focus {
+.button:hover,
+.button:focus {
     background-color: var(--highlight-hover-color);
 }
 
