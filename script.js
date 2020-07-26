@@ -86,15 +86,12 @@ function buildQuotazo(image, quote){
     const quoteString = getQuoteString(quote);
     const url = image.rawurl + '&' + sizingString + '&' + quoteString;
     console.log(image.description);
+    console.log(image.id);
+    console.log(encodeURIComponent(quote));
     $('.quotazo-image').attr({src:url, alt:image.description});
 }
 
-async function getRandomImage(quote) {
-    const params = {
-        query: quote,
-    }
-    const queryString = formatQueryParams(params);
-    const url = randomImageURL + '?' + queryString;
+async function fetchUnsplashImage(url) {
     const options = {
         headers: new Headers({
           "Authorization": `Client-ID ${apiKey}`,
@@ -133,6 +130,16 @@ async function getRandomImage(quote) {
     return image;
     // the function returns just the data I use, instead of the
     // whole json response
+
+}
+
+async function getRandomImage(quote) {
+    const params = {
+        query: quote,
+    }
+    const queryString = formatQueryParams(params);
+    const url = randomImageURL + '?' + queryString;
+    return await fetchUnsplashImage(url);
 }
 
 // the forismatic.com API doesn't return a Access-Control-Allow-Origin
@@ -157,44 +164,7 @@ async function getRandomQuote() {
 
 async function getSpecificImage(id) {
     const url = specificImageURL + id;
-    const options = {
-        headers: new Headers({
-          "Authorization": `Client-ID ${apiKey}`,
-          "Accept-Version": "v1"
-        }),
-        mode: "cors"
-    };
-    // this is an object for the bits of the response I'm interested in
-    const image = {
-        id:"",
-        rawurl:"",
-        userlink:"",
-        username:"",
-        description:"",
-        // bdrColor:""
-    }
-    await fetch(url, options)
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error(response.statusText);
-        }
-    })
-    .then(responseJson => {
-        image.id = responseJson.id;
-        image.rawurl = responseJson.urls.raw;
-        image.userlink = responseJson.user.links.html;
-        image.username = responseJson.user.name;
-        image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
-        // image.bdrColor = responseJson.bdrColor;
-    })
-    .catch(err => {
-        showErrorImage();
-    })
-    // the function returns just the data I use, instead of the
-    // whole json response
-    return image;
+    return await fetchUnsplashImage(url);
 }
 
 // I seperated the retrieving of random quotes and images
