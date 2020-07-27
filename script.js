@@ -12,8 +12,8 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
-function showFigure() {
-    $('figure').removeClass('hidden');
+function showQuotazo() {
+    $('.quotazo-display').removeClass('hidden');
     $('.tagline').addClass('hidden');
 }
 
@@ -23,7 +23,7 @@ function showErrorImage() {
     $('.quotazo-image').attr({src:"images/error.jfif", alt:"Ooops! I couldn't find a fresh quote for you. Maybe the Internet is down! Please try again later. - Quotazo"});
     const html = `Photo by <a href="https://unsplash.com/@maxchen2k?utm_source=quotazo&utm_medium=referral">Max Chen</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
     $('.attribution').html(html);
-    showFigure();
+    showQuotazo();
 }
 
 // this creates a simple attribution link for the photographer
@@ -35,10 +35,40 @@ function buildAttribution(image) {
     $('.attribution').html(html);
 }
 
+function buildDownload() {
+    const url = $('.quotazo-image').attr("src") + "&dl";
+    $('#download').attr("href",url);
+}
+
+function buildShareLink (image, quote) {
+    const searchParams = {
+        id: image.id,
+        q: quote
+    }
+    return `https://tim-hanke.github.io/quotazo/index.html?${formatQueryParams(searchParams)}`;
+}
+
+function buildEmail(link) {
+    const emailParams = {
+        subject: "Check out this Quotazo!",
+        body: link
+    }
+    const url = "mailto:?" + formatQueryParams(emailParams);
+    console.log(url);
+    $('#email').attr("href",url);
+}
+
+function buildSharingLinks(image, quote) {
+    buildDownload();
+    const shareLink = buildShareLink(image, quote);
+    buildEmail(shareLink);
+    // buildFacebook(image, quote);
+    // buildLinkedIn(image, quote);
+    // buildInstagram(image, quote);
+}
+
 // this produces a formatting string to pass via URL to unsplash
 // to have the image served in the correct dimensions
-// I also added a duotone effect to match the image better to
-// the background of the quote's text box
 function getSizingString() {
     const params = {
         fm: "jpg",
@@ -85,9 +115,6 @@ function buildQuotazo(image, quote){
     const sizingString = getSizingString();
     const quoteString = getQuoteString(quote);
     const url = image.rawurl + '&' + sizingString + '&' + quoteString;
-    console.log(image.description);
-    console.log(image.id);
-    console.log(encodeURIComponent(quote));
     $('.quotazo-image').attr({src:url, alt:image.description});
 }
 
@@ -153,7 +180,7 @@ async function getRandomQuote() {
             jsonp: "jsonp"
         });
         // the quote data sometimes comes with extraneous spaces,
-        // so I'm using trin() to remove them
+        // so I'm using trim() to remove them
         // also, sometimes the author field is blank. If so,
         // we'll substitute in "Unknown"
         return `${response.quoteText.trim()} - ${(response.quoteAuthor ? response.quoteAuthor.trim() : "Unknown")}`;
@@ -178,7 +205,8 @@ async function showRandomQuotazo() {
     if (quote && image) {
         buildQuotazo(image, quote);
         buildAttribution(image);
-        showFigure();
+        buildSharingLinks(image, quote);
+        showQuotazo();
     } else {    
         showErrorImage();    
     }
@@ -203,7 +231,8 @@ async function checkURLParams() {
         if (quote) {
             buildQuotazo(image, quote);
             buildAttribution(image);
-            showFigure();
+            buildSharingLinks(image, quote);
+            showQuotazo();
         } else {
             showErrorImage();
         }

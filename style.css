@@ -3,7 +3,6 @@
 }
 
 :root {
-    /* --darkest-bg-color: #595b5b; */
     --darkest-bg-color: #696969;
     --light-bg-color: #B7C8B5;
     --dark-bg-color: #0b4141;
@@ -28,17 +27,14 @@ body {
     color: var(--text-color);
     min-height: 100vh;
     background: var(--light-bg-color);
-    /* background: linear-gradient(160deg, var(--darkest-bg-color) 0%, var(--light-bg-color) 30%, var(--dark-bg-color) 100%); */
     background: linear-gradient(165deg, #7400b8ff, #6930c3ff, #5e60ceff, #5390d9ff, #4ea8deff, #48bfe3ff, #56cfe1ff, #64dfdfff, #72efddff, #80ffdbff);;
 }
 
 header {
-    /* background-color: var(--light-bg-color); */
     color:var(--text-color);
     max-width: 600px;
     margin: auto;
     text-align: center;
-    /* color: white; */
 }
 
 h1 {
@@ -67,12 +63,13 @@ h1 {
     -o-transition: color .3s;
     transition: color .3s;
 }
+
 .sharing-icon:hover {
     color: var(--highlight-hover-color)
 }
 
 main {
-    max-width: 600px;
+    /* max-width: 600px; */
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -100,12 +97,16 @@ main {
     background-color: var(--highlight-hover-color);
 }
 
-figure {
+.quotazo-display {
     width: 100%;
-    padding: 4px;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+figure {
+    margin: 15px;
 }
 
 .quotazo-image {
@@ -118,6 +119,10 @@ figure {
     text-align: center;
     color: black;
     padding: .5rem;
+}
+
+.attribution a {
+    color: black;
 }
 
 .hidden {
