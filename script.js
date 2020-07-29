@@ -264,8 +264,14 @@ async function getSpecificImage(id) {
 async function checkURLParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+    console.log(urlParams);
     if (urlParams.has('q') && urlParams.has('id')) {
-        const quote = decodeURIComponent(urlParams.get('q'));
+        const quoteText = decodeURIComponent(urlParams.get('q'));
+        const quoteAuthor = quoteText.split('-')[1];
+        const quote = {
+            text: quoteText,
+            author: quoteAuthor
+        }
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
         if (quote) {
             buildQuotazo(image, quote);
