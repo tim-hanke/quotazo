@@ -50,6 +50,12 @@ function buildShareLink (image, quote) {
     return `https://tim-hanke.github.io/quotazo/index.html?${formatQueryParams(searchParams)}`;
 }
 
+function updateOpenGraph(link) {
+    $('.og-url').attr('content', link);
+    const imageURL = $('.quotazo-image').attr("src");
+    $('.og-image').attr('content', imageURL);
+}
+
 function buildEmail(link) {
     const emailParams = {
         subject: "Check out this Quotazo!",
@@ -72,9 +78,10 @@ function buildFacebook(link) {
 //      2. a mailto link with the parameter-ized url in the message body
 //      3. a link to facebook's sharer with the parameter-ized url
 //      4. a link to linkedin's sharer with the parameter-ized url
-function buildSharingLinks(image, quote) {    
+function buildSharingLinks(image, quote) {
     buildDownload();
     const shareLink = buildShareLink(image, quote);
+    updateOpenGraph(shareLink);
     buildEmail(shareLink);
     buildFacebook(shareLink);
     // buildLinkedIn(image, quote);
