@@ -4,7 +4,6 @@ const specificImageURL = "https://api.unsplash.com/photos/"
 const textEndpointURL = "https://assets.imgix.net/~text";
 const apiKey = "2J86Mb_dvHxogT4Z-EpAk-Zo3BV6Z2KAE64u0wJKIc4"
 
-// the same formatting I used in me last project to
 // make the parameters URL safe
 function formatQueryParams(params) {
     const queryItems = Object.keys(params)
@@ -60,6 +59,7 @@ function buildShareLink (image, quote) {
 function updateOpenGraph(link) {
     // so, facebook doesn't read javascript when scraping, so this
     // update is currently irrelevant
+    // I'm leaving it in case that changes
     $('.og-url').attr('content', link);
     const imageURL = $('.quotazo-image').attr("src");
     $('.og-image').attr('content', imageURL);
@@ -137,6 +137,14 @@ function buildQuotazoImage(image, quote){
     $('.quotazo-image').attr({src:url, alt:image.description});
 }    
 
+// once we have the image object and the quote object,
+// we'll insert the various pieces where we need them
+// buildQuotazoImage performs the formatting of the image
+// and overlays the quote
+// buildCaption makes a normal html attribution and an
+// instagram style caption
+// buildDownload,Email,Facebook,Linkedin make links
+// for the current image/quote on their various formats
 function buildQuotazo(image, quote) {
     buildQuotazoImage(image, quote);
     buildCaption(image, quote);
@@ -148,6 +156,8 @@ function buildQuotazo(image, quote) {
     buildLinkedIn(shareLink);
 }
 
+// whether we're retrieving a random image or a specific
+// image from Unsplash, this will fetch it
 async function fetchUnsplashImage(url) {
     const options = {
         headers: new Headers({
@@ -181,7 +191,6 @@ async function fetchUnsplashImage(url) {
         image.username = responseJson.user.name;
         image.userinstagram = responseJson.user.instagram_username;
         image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
-        // image.bdrColor = "75" + responseJson.color.slice(1);
     })    
     .catch(err => {
         showErrorImage();
@@ -229,10 +238,8 @@ async function getRandomQuote() {
     }
 }
 
-// I seperated the retrieving of random quotes and images
-// from the image generator to make it easier to later add
-// the ability to generate an image (a quotazo) from a
-// selected background image or user entered quote
+// get both a random quote and random image
+// used with the Random Quote button
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
@@ -244,16 +251,18 @@ async function showRandomQuotazo() {
     }
 }
 
+// get an Unsplash image using their id number
+// used in conjunction with URL parameters
+async function getSpecificImage(id) {
+    const url = specificImageURL + id;
+    return await fetchUnsplashImage(url);
+}
+
 // When "random" button is clicked, called showRandomQuotazo
 function watchRandomButton() {
     $('.randomButton').click(e => {
         showRandomQuotazo();
     });
-}
-
-async function getSpecificImage(id) {
-    const url = specificImageURL + id;
-    return await fetchUnsplashImage(url);
 }
 
 // checks if URL parameters exist for an image id and a 
@@ -264,7 +273,6 @@ async function getSpecificImage(id) {
 async function checkURLParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    console.log(urlParams);
     if (urlParams.has('q') && urlParams.has('id')) {
         const quoteText = decodeURIComponent(urlParams.get('q'));
         const quoteAuthor = quoteText.split('-')[1];
@@ -298,6 +306,10 @@ function watchInstagramButton() {
     })
 }
 
+// on page load, first check if URL parameters are being passed
+// for a specific image/quote pair
+// then load click handlers for the Random Image Button
+// and the Instagram Button
 $(function() {
     checkURLParams();
     watchRandomButton();
