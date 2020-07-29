@@ -38,7 +38,7 @@ function buildAttribution(image) {
 }
 
 function buildInstagram(image, quote) {
-    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.name)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash`;
+    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash`;
     $('.instagram-caption').html(html);
 }
 

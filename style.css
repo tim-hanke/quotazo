@@ -9,17 +9,6 @@
     --text-color: #E6F2E3;
     --highlight-color: #FF0035;
     --highlight-hover-color: #e0002d;
-
-    --purple: hsla(278, 100%, 36%, 1);
-    --french-violet: hsla(263, 60%, 48%, 1);
-    --slate-blue: hsla(239, 53%, 59%, 1);
-    --tufts-blue: hsla(213, 64%, 59%, 1);
-    --blue-jeans: hsla(203, 69%, 59%, 1);
-    --vivid-sky-blue: hsla(194, 73%, 59%, 1);
-    --sky-blue-crayola: hsla(188, 70%, 61%, 1);
-    --medium-turquoise: hsla(180, 66%, 63%, 1);
-    --turquoise: hsla(171, 80%, 69%, 1);
-    --aquamarine: hsla(163, 100%, 75%, 1);
 }
 
 body {
@@ -106,13 +95,13 @@ main {
 }
 
 figure {
+    width: 100%;
     margin: 15px;
 }
 
 .quotazo-image {
     height: auto;
     width: 100%;
-    max-width: 1080px;
 }
 
 .attribution, .instagram-caption {
