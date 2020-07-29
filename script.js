@@ -30,16 +30,18 @@ function showErrorImage() {
 
 // this creates a simple attribution link for the photographer
 // of the image and inserts it into the DOM
-// unsplash's API documentation says it's recommended,
-// not required, but it definitely seems like best practices
-function buildAttribution(image) {
-    const html = `Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a>`
+// also, since instagram doesn't have a way for normal people to post
+// outside of the app, I just make an instagram style caption
+// to make it easier to manually post a quotazo image
+// on page load, the html caption is visible and the instagram
+// style is hidden. the instagram button on the page will
+// switch them back and forth
+function buildCaption(image, quote) {
+    let html = `<span id="html-attribution">Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a></span>`
+    html += `<span id="instagram">Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash</span>`;
     $('.attribution').html(html);
-}
-
-function buildInstagram(image, quote) {
-    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash`;
-    $('.instagram-caption').html(html);
+    $('.attribution').removeClass('instagram');
+    $('#instagram').hide()
 }
 
 function buildDownload() {
@@ -137,8 +139,7 @@ function buildQuotazoImage(image, quote){
 
 function buildQuotazo(image, quote) {
     buildQuotazoImage(image, quote);
-    buildAttribution(image);
-    buildInstagram(image, quote);
+    buildCaption(image, quote);
     buildDownload();
     const shareLink = buildShareLink(image, quote);
     updateOpenGraph(shareLink);
@@ -275,14 +276,19 @@ async function checkURLParams() {
     }
 }
 
-// since instagram doesn't have a way for normal people to post
-// outside of the app, I just make an instagram style caption
-// to make it easier to manually post a quotazo image
+// the instagram button swaps back and forth between the 
+// regular style caption and the instagram style caption
 function watchInstagramButton() {
     $('#instagram-button').click(e => {
         e.preventDefault();
-        $('.attribution').toggleClass('hidden');
-        $('.instagram-caption').toggleClass('hidden');
+        if ($('.attribution').hasClass('instagram')) {
+            $('#instagram').hide();
+            $('#html-attribution').show();
+        } else {
+            $('#instagram').show();
+            $('#html-attribution').hide();
+        };
+        $('.attribution').toggleClass('instagram');
     })
 }
 

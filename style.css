@@ -105,14 +105,15 @@ figure {
     width: 100%;
 }
 
-.attribution, .instagram-caption {
+.attribution {
     text-align: center;
     color: black;
     padding: .5rem;
+    padding-bottom: 27px;
 }
 
-.attribution {
-    padding-bottom: 27px;
+.instagram {
+    padding-bottom: .5rem;
 }
 
 .attribution a {
