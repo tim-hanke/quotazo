@@ -51,6 +51,8 @@ function buildShareLink (image, quote) {
 }
 
 function updateOpenGraph(link) {
+    // so, facebook doesn't read javascript when scraping, so this
+    // update is currently irrelevant
     $('.og-url').attr('content', link);
     const imageURL = $('.quotazo-image').attr("src");
     $('.og-image').attr('content', imageURL);
@@ -70,6 +72,13 @@ function buildFacebook(link) {
     $('#facebook').attr("href",url);
 }
 
+function buildLinkedIn(link) {
+    // https://www.linkedin.com/shareArticle?mini=true&url=
+    const url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(link)}`;
+    $('#linkedin').attr("href",url);
+
+}
+
 // this creates a link for each of the sharing icons using subfunction
 // respectively:
 // 1. opens a save dialog for the image
@@ -84,7 +93,7 @@ function buildSharingLinks(image, quote) {
     updateOpenGraph(shareLink);
     buildEmail(shareLink);
     buildFacebook(shareLink);
-    // buildLinkedIn(image, quote);
+    buildLinkedIn(shareLink);
     // buildInstagram(image, quote);
 }
 
