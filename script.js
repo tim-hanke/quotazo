@@ -38,7 +38,7 @@ function buildAttribution(image) {
 }
 
 function buildInstagram(image, quote) {
-    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.name)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('')} #unsplash`;
+    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.name)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash`;
     $('.instagram-caption').html(html);
 }
 
@@ -275,6 +275,9 @@ async function checkURLParams() {
     }
 }
 
+// since instagram doesn't have a way for normal people to post
+// outside of the app, I just make an instagram style caption
+// to make it easier to manually post a quotazo image
 function watchInstagramButton() {
     $('#instagram-button').click(e => {
         e.preventDefault();
