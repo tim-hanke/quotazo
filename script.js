@@ -12,6 +12,8 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
+// this simply flips on the section containing the image
+// and links, and hides the tagline
 function showQuotazo() {
     $('.quotazo-display').removeClass('hidden');
     $('.tagline').addClass('hidden');
@@ -54,35 +56,29 @@ function buildEmail(link) {
         body: link
     }
     const url = "mailto:?" + formatQueryParams(emailParams);
-    console.log(url);
     $('#email').attr("href",url);
 }
 
-function buildSharingLinks(image, quote) {
+function buildFacebook(link) {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
+    $('#facebook').attr("href",url);
+}
+
+// this creates a link for each of the sharing icons using subfunction
+// respectively:
+// 1. opens a save dialog for the image
+// make an url with query parameters to get back to the current
+// image/quote pair and puts that parameter-ized url in:
+//      2. a mailto link with the parameter-ized url in the message body
+//      3. a link to facebook's sharer with the parameter-ized url
+//      4. a link to linkedin's sharer with the parameter-ized url
+function buildSharingLinks(image, quote) {    
     buildDownload();
     const shareLink = buildShareLink(image, quote);
     buildEmail(shareLink);
-    // buildFacebook(image, quote);
+    buildFacebook(shareLink);
     // buildLinkedIn(image, quote);
     // buildInstagram(image, quote);
-}
-
-// this produces a formatting string to pass via URL to unsplash
-// to have the image served in the correct dimensions
-function getSizingString() {
-    const params = {
-        fm: "jpg",
-        auto: "format",
-        w: "1080",
-        ar: "1:1",
-        fit: "crop",
-        crop: "entropy",
-        // border: `10,${bdrColor}`
-        // duotone:"000000,002228",
-        // "duotone-alpha":"25"
-    }
-    const sizingString = formatQueryParams(params);
-    return sizingString;
 }
 
 // this uses the imgix text endpoint to make an image out of
@@ -105,6 +101,24 @@ function getQuoteString(quote) {
     const alignString = "center,middle"
     const quoteURL = `mark64=${btoa(textEndpointURL + '?' + formattingString)}&markalign64=${btoa(alignString)}`;
     return quoteURL;
+}
+
+// this produces a formatting string to pass via URL to unsplash
+// to have the image served in the correct dimensions
+function getSizingString() {
+    const params = {
+        fm: "jpg",
+        auto: "format",
+        w: "1080",
+        ar: "1:1",
+        fit: "crop",
+        crop: "entropy",
+        // border: `10,${bdrColor}`
+        // duotone:"000000,002228",
+        // "duotone-alpha":"25"
+    }
+    const sizingString = formatQueryParams(params);
+    return sizingString;
 }
 
 // the sizing/cropping of the background image, and the formatting/insertion
@@ -157,9 +171,11 @@ async function fetchUnsplashImage(url) {
     return image;
     // the function returns just the data I use, instead of the
     // whole json response
-
 }
 
+// we search unsplash using the quote string we retrieved
+// from forismatic as the query string
+// this hopefully returns us an image related to the quote
 async function getRandomImage(quote) {
     const params = {
         query: quote,
@@ -189,11 +205,6 @@ async function getRandomQuote() {
     }
 }
 
-async function getSpecificImage(id) {
-    const url = specificImageURL + id;
-    return await fetchUnsplashImage(url);
-}
-
 // I seperated the retrieving of random quotes and images
 // from the image generator to make it easier to later add
 // the ability to generate an image (a quotazo) from a
@@ -219,9 +230,16 @@ function watchRandomButton() {
     });
 }
 
+async function getSpecificImage(id) {
+    const url = specificImageURL + id;
+    return await fetchUnsplashImage(url);
+}
+
 // checks if URL parameters exist for an image id and a 
 // quote, and if they do, build and displays a quotazo
 // using them
+// this allows a link to be used that will pull up the
+// same image/quote pair
 async function checkURLParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
