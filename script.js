@@ -37,6 +37,11 @@ function buildAttribution(image) {
     $('.attribution').html(html);
 }
 
+function buildInstagram(image, quote) {
+    const html = `Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.name)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('')} #unsplash`;
+    $('.instagram-caption').html(html);
+}
+
 function buildDownload() {
     const url = $('.quotazo-image').attr("src") + "&dl";
     $('#download').attr("href",url);
@@ -45,7 +50,7 @@ function buildDownload() {
 function buildShareLink (image, quote) {
     const searchParams = {
         id: image.id,
-        q: quote
+        q: quote.text
     }
     return `https://tim-hanke.github.io/quotazo/index.html?${formatQueryParams(searchParams)}`;
 }
@@ -79,24 +84,6 @@ function buildLinkedIn(link) {
 
 }
 
-// this creates a link for each of the sharing icons using subfunction
-// respectively:
-// 1. opens a save dialog for the image
-// make an url with query parameters to get back to the current
-// image/quote pair and puts that parameter-ized url in:
-//      2. a mailto link with the parameter-ized url in the message body
-//      3. a link to facebook's sharer with the parameter-ized url
-//      4. a link to linkedin's sharer with the parameter-ized url
-function buildSharingLinks(image, quote) {
-    buildDownload();
-    const shareLink = buildShareLink(image, quote);
-    updateOpenGraph(shareLink);
-    buildEmail(shareLink);
-    buildFacebook(shareLink);
-    buildLinkedIn(shareLink);
-    // buildInstagram(image, quote);
-}
-
 // this uses the imgix text endpoint to make an image out of
 // the quote, which will be overlaid on the unsplash image
 // it also encodes the string of parameters in base64 per
@@ -105,7 +92,7 @@ function getQuoteString(quote) {
     const paramsBox = {
         w: "900",
         txtclr: "ffffee",
-        txt: quote,
+        txt: quote.text,
         txtsize: "60",
         txtlead:"0",
         txtpad:"60",
@@ -132,69 +119,83 @@ function getSizingString() {
         // border: `10,${bdrColor}`
         // duotone:"000000,002228",
         // "duotone-alpha":"25"
-    }
+    }    
     const sizingString = formatQueryParams(params);
     return sizingString;
-}
+} 
 
 // the sizing/cropping of the background image, and the formatting/insertion
 // of the quote are all done through URL parameters, so this combines strings
 // for both of those with the raw image URL from unsplash and inserts it
 // into the DOM
-function buildQuotazo(image, quote){
+function buildQuotazoImage(image, quote){
     const sizingString = getSizingString();
     const quoteString = getQuoteString(quote);
     const url = image.rawurl + '&' + sizingString + '&' + quoteString;
     $('.quotazo-image').attr({src:url, alt:image.description});
+}    
+
+function buildQuotazo(image, quote) {
+    buildQuotazoImage(image, quote);
+    buildAttribution(image);
+    buildInstagram(image, quote);
+    buildDownload();
+    const shareLink = buildShareLink(image, quote);
+    updateOpenGraph(shareLink);
+    buildEmail(shareLink);
+    buildFacebook(shareLink);
+    buildLinkedIn(shareLink);
 }
 
 async function fetchUnsplashImage(url) {
     const options = {
         headers: new Headers({
-          "Authorization": `Client-ID ${apiKey}`,
+          "Authorization": `Client-ID ${apiKey}`,  
           "Accept-Version": "v1"
-        }),
+        }),  
         mode: "cors"
-    };
+    };    
     // this is an object for the bits of the response I'm interested in
     const image = {
         id:"",
         rawurl:"",
         userlink:"",
         username:"",
+        userinstagram: "",
         description:"",
         // bdrColor: ""
-    }
+    }    
     await fetch(url, options)
     .then(response => {
         if (response.ok) {
             return response.json();
         } else {
             throw new Error(response.statusText);
-        }
-    })
+        }    
+    })    
     .then(responseJson => {
         image.id = responseJson.id;
         image.rawurl = responseJson.urls.raw;
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
+        image.userinstagram = responseJson.user.instagram_username;
         image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
         // image.bdrColor = "75" + responseJson.color.slice(1);
-    })
+    })    
     .catch(err => {
         showErrorImage();
-    })
+    })    
     return image;
     // the function returns just the data I use, instead of the
     // whole json response
-}
+}    
 
 // we search unsplash using the quote string we retrieved
 // from forismatic as the query string
 // this hopefully returns us an image related to the quote
 async function getRandomImage(quote) {
     const params = {
-        query: quote,
+        query: quote.text,
     }
     const queryString = formatQueryParams(params);
     const url = randomImageURL + '?' + queryString;
@@ -205,6 +206,10 @@ async function getRandomImage(quote) {
 // header, in other words it doesn't do CORS, so I'm retrieving it
 // using jQuery.ajax
 async function getRandomQuote() {
+    const quote = {
+        text: "",
+        author: ""
+    };
     try {
         const response = await $.ajax({
             url: quoteSearchURL,
@@ -215,7 +220,9 @@ async function getRandomQuote() {
         // so I'm using trim() to remove them
         // also, sometimes the author field is blank. If so,
         // we'll substitute in "Unknown"
-        return `${response.quoteText.trim()} - ${(response.quoteAuthor ? response.quoteAuthor.trim() : "Unknown")}`;
+        quote.author = (response.quoteAuthor ? response.quoteAuthor.trim() : "Unknown");
+        quote.text = `${response.quoteText.trim()} - ${quote.author}`;
+        return quote;
     } catch (err) {
         showErrorImage();
     }
@@ -228,11 +235,8 @@ async function getRandomQuote() {
 async function showRandomQuotazo() {
     const quote = await getRandomQuote();
     const image = await getRandomImage(quote);
-    // console.log(image);
     if (quote && image) {
         buildQuotazo(image, quote);
-        buildAttribution(image);
-        buildSharingLinks(image, quote);
         showQuotazo();
     } else {    
         showErrorImage();    
@@ -264,8 +268,6 @@ async function checkURLParams() {
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
         if (quote) {
             buildQuotazo(image, quote);
-            buildAttribution(image);
-            buildSharingLinks(image, quote);
             showQuotazo();
         } else {
             showErrorImage();
@@ -273,7 +275,16 @@ async function checkURLParams() {
     }
 }
 
+function watchInstagramButton() {
+    $('#instagram-button').click(e => {
+        e.preventDefault();
+        $('.attribution').toggleClass('hidden');
+        $('.instagram-caption').toggleClass('hidden');
+    })
+}
+
 $(function() {
     checkURLParams();
     watchRandomButton();
+    watchInstagramButton();
 })

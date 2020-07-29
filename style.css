@@ -115,10 +115,14 @@ figure {
     max-width: 1080px;
 }
 
-.attribution {
+.attribution, .instagram-caption {
     text-align: center;
     color: black;
     padding: .5rem;
+}
+
+.attribution {
+    padding-bottom: 27px;
 }
 
 .attribution a {
