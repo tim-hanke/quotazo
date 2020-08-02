@@ -3,6 +3,7 @@
 
 https://tim-hanke.github.io/quotazo/
 
+![quotazo-small](https://user-images.githubusercontent.com/64292589/89123521-06aace80-d49e-11ea-8683-c4fc483da797.jpg)
 
 Quotazo generates high-quality, meme-like "quotazos" by pairing a famous, inspirational and/or amusing quote with a related image. The user can then download the image, share a link via email, Facebook or LinkedIn, or get a pre-made Instagram style caption.
 
