@@ -7,7 +7,7 @@ const apiKey = "2J86Mb_dvHxogT4Z-EpAk-Zo3BV6Z2KAE64u0wJKIc4"
 // make the parameters URL safe
 function formatQueryParams(params) {
     const queryItems = Object.keys(params)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     return queryItems.join('&');
 }
 
@@ -38,8 +38,13 @@ function showErrorImage() {
 function buildCaption(image, quote) {
     let html = `<span id="html-attribution">Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a></span>`
     html += `<span id="instagram">Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash</span>`;
-    $('.attribution').html(html);
-    $('.attribution').removeClass('instagram');
+
+    // caching the jQuery lookup
+    // for this small example, it probably won't make much of a difference,
+    // but it seems like good performance practice
+    const $attribution = $('.attribution');
+    $attribution.html(html);
+    $attribution.removeClass('instagram');
     $('#instagram').hide()
 }
 
@@ -51,7 +56,7 @@ function buildDownload() {
 function buildShareLink (image, quote) {
     const searchParams = {
         id: image.id,
-        q: quote.text
+        q: quote.text,
     }
     return `https://tim-hanke.github.io/quotazo/index.html?${formatQueryParams(searchParams)}`;
 }
@@ -59,7 +64,7 @@ function buildShareLink (image, quote) {
 function buildEmail(link) {
     const emailParams = {
         subject: "Check out this Quotazo!",
-        body: link
+        body: link,
     }
     const url = "mailto:?" + formatQueryParams(emailParams);
     $('#email').attr("href",url);
@@ -71,7 +76,6 @@ function buildFacebook(link) {
 }
 
 function buildLinkedIn(link) {
-    // https://www.linkedin.com/shareArticle?mini=true&url=
     const url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(link)}`;
     $('#linkedin').attr("href",url);
 
@@ -87,11 +91,11 @@ function getQuoteString(quote) {
         txtclr: "ffffee",
         txt: quote.text,
         txtsize: "60",
-        txtlead:"0",
-        txtpad:"60",
+        txtlead: "0",
+        txtpad: "60",
         "txt-shad": "5",
-        bg:"99000000",
-        txtfont:"HelveticaNeue-Thin"
+        bg: "99000000",
+        txtfont: "HelveticaNeue-Thin",
     }    
     const formattingString = formatQueryParams(paramsBox);
     const alignString = "center,middle"
@@ -109,9 +113,6 @@ function getSizingString() {
         ar: "1:1",
         fit: "crop",
         crop: "entropy",
-        // border: `10,${bdrColor}`
-        // duotone:"000000,002228",
-        // "duotone-alpha":"25"
     }    
     const sizingString = formatQueryParams(params);
     return sizingString;
@@ -152,10 +153,11 @@ async function fetchUnsplashImage(url) {
     const options = {
         headers: new Headers({
           "Authorization": `Client-ID ${apiKey}`,  
-          "Accept-Version": "v1"
+          "Accept-Version": "v1",
         }),  
-        mode: "cors"
+        mode: "cors",
     };    
+
     // this is an object for the bits of the response I'm interested in
     const image = {
         id:"",
@@ -166,22 +168,22 @@ async function fetchUnsplashImage(url) {
         description:"",
     }    
     await fetch(url, options)
-    .then(response => {
+    .then((response) => {
         if (response.ok) {
             return response.json();
         } else {
             throw new Error(response.statusText);
         }    
     })    
-    .then(responseJson => {
+    .then((responseJson) => {
         image.id = responseJson.id;
         image.rawurl = responseJson.urls.raw;
         image.userlink = responseJson.user.links.html;
         image.username = responseJson.user.name;
         image.userinstagram = responseJson.user.instagram_username;
-        image.description = (responseJson.description ? responseJson.description : responseJson.alt_description);
+        image.description = (responseJson.description || responseJson.alt_description);
     })    
-    .catch(err => {
+    .catch((err) => {
         showErrorImage();
     })    
     return image;
@@ -205,14 +207,15 @@ async function getRandomImage(quote) {
 async function getRandomQuote() {
     const quote = {
         text: "",
-        author: ""
+        author: "",
     };
     try {
         const response = await $.ajax({
             url: quoteSearchURL,
             dataType: "jsonp",
-            jsonp: "jsonp"
+            jsonp: "jsonp",
         });
+
         // the quote data sometimes comes with extraneous spaces,
         // so I'm using trim() to remove them
         // also, sometimes the author field is blank. If so,
@@ -247,7 +250,7 @@ async function getSpecificImage(id) {
 
 // When "random" button is clicked, called showRandomQuotazo
 function watchRandomButton() {
-    $('.randomButton').click(e => {
+    $('.randomButton').click((e) => {
         showRandomQuotazo();
     });
 }
@@ -261,14 +264,14 @@ async function checkURLParams() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     if (urlParams.has('q') && urlParams.has('id')) {
-        const quoteText = decodeURIComponent(urlParams.get('q'));
-        const quoteAuthor = quoteText.split('-')[1];
+        const text = decodeURIComponent(urlParams.get('q'));
+        const author = text.split('-')[1];
         const quote = {
-            text: quoteText,
-            author: quoteAuthor
+            text,
+            author,
         }
         const image = await getSpecificImage(decodeURIComponent(urlParams.get('id')));
-        if (quote) {
+        if (quote && image) {
             buildQuotazo(image, quote);
             showQuotazo();
         } else {
@@ -280,7 +283,7 @@ async function checkURLParams() {
 // the instagram button swaps back and forth between the 
 // regular style caption and the instagram style caption
 function watchInstagramButton() {
-    $('#instagram-button').click(e => {
+    $('#instagram-button').click((e) => {
         e.preventDefault();
         if ($('.attribution').hasClass('instagram')) {
             $('#instagram').hide();
