@@ -92,6 +92,10 @@ main {
     color: black;
 }
 
+.instagram {
+    padding-bottom: .5rem;
+}
+
 .sharing-list {
     width: 100%;
     max-width: 600px;
@@ -116,8 +120,11 @@ main {
     color: var(--highlight-hover-color)
 }
 
-.instagram {
-    padding-bottom: .5rem;
+#instagram-button {
+    background: none;
+    border: none;
+    /* outline: none; */
+    padding: 0;
 }
 
 .hidden {
