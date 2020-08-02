@@ -29,6 +29,7 @@ header {
 
 h1 {
     font-family: 'Roboto Slab', serif;
+    font-size: calc(32px + 2vmax);
 }
 
 main {
@@ -42,29 +43,6 @@ main {
     color: var(--highlight-color);    
 }
 
-.sharing-list {
-    width: 100%;
-    max-width: 600px;
-    padding: 0 25px 0 25px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    list-style-type: none;
-
-}
-
-.sharing-icon {
-    font-size: 32px;
-    -webkit-transition: color .3s;
-    -moz-transition: color .3s;
-    -o-transition: color .3s;
-    transition: color .3s;
-}
-
-.sharing-icon:hover {
-    color: var(--highlight-hover-color)
-}
-
 .button {
     background-color: var(--highlight-color);
     -webkit-transition: background-color .3s;
@@ -72,23 +50,22 @@ main {
     -o-transition: background-color .3s;
     transition: background-color .3s;
     font-family: 'Roboto', sans-serif;
-    font-size: 19px;
+    font-size: calc(16px + 1vmax);
     font-weight: bold;
     color: var(--text-color);
-    padding: 1em;
-    border-radius: 1em;
+    padding: .5em 1em;
+    border-radius: .6em;
     border: 0;
-    outline: none;
 }
 
-.button:hover,
-.button:focus {
+.button:hover {
     background-color: var(--highlight-hover-color);
 }
 
 .quotazo-display {
     width: 100%;
     max-width: 600px;
+    margin-top: 2vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -111,14 +88,77 @@ main {
     padding-bottom: 27px;
 }
 
-.instagram {
-    padding-bottom: .5rem;
-}
-
 .attribution a {
     color: black;
 }
 
+.sharing-list {
+    width: 100%;
+    max-width: 600px;
+    padding: 0;
+    margin: 0 25px 0 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style-type: none;
+
+}
+
+.sharing-icon {
+    font-size: 32px;
+    -webkit-transition: color .3s;
+    -moz-transition: color .3s;
+    -o-transition: color .3s;
+    transition: color .3s;
+}
+
+.sharing-icon:hover {
+    color: var(--highlight-hover-color)
+}
+
+.instagram {
+    padding-bottom: .5rem;
+}
+
 .hidden {
     display: none;
+}
+
+/* in landscape mode, switches the sharing icon list
+   from a horizontal list under the image to a 
+   vertical list beside the image */
+@media (orientation: landscape) {
+    .quotazo-display {
+        flex-direction: row;
+        justify-content: space-around;
+        max-width: 100%;
+        margin-top: 4vmax;
+    }
+
+    .quotazo-figure {
+        margin: 0 0 0 5vw;
+        width: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .quotazo-image {
+        height: 80vh;
+        width: auto;
+    }
+
+    .sharing-list {
+        flex-direction: column;
+        align-self: stretch;
+        width: auto;
+        margin: 0 7vw 50px 0;
+    }
+
+}
+
+@media (min-width: 900px) {
+    .sharing-icon, h1 {
+        font-size: calc(32px + 3vw);
+    }
 }

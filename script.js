@@ -37,7 +37,7 @@ function showErrorImage() {
 // switch them back and forth
 function buildCaption(image, quote) {
     let html = `<span id="html-attribution">Photo by <a href="${image.userlink}?utm_source=quotazo&utm_medium=referral">${image.username}</a> on <a href="https://unsplash.com/?utm_source=quotazo&utm_medium=referral">Unsplash</a></span>`
-    html += `<span id="instagram">Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash</span>`;
+    html += `<span id="instagram-caption">Photo by ${(image.userinstagram ? "@" + image.userinstagram : image.username)} on @unsplash<br>#quotazo #${quote.author.split(' ').join('').toLowerCase()} #unsplash</span>`;
 
     // caching the jQuery lookup
     // for this small example, it probably won't make much of a difference,
@@ -45,7 +45,7 @@ function buildCaption(image, quote) {
     const $attribution = $('.attribution');
     $attribution.html(html);
     $attribution.removeClass('instagram');
-    $('#instagram').hide()
+    $('#instagram-caption').hide()
 }
 
 function buildDownload() {
@@ -286,10 +286,10 @@ function watchInstagramButton() {
     $('#instagram-button').click((e) => {
         e.preventDefault();
         if ($('.attribution').hasClass('instagram')) {
-            $('#instagram').hide();
+            $('#instagram-caption').hide();
             $('#html-attribution').show();
         } else {
-            $('#instagram').show();
+            $('#instagram-caption').show();
             $('#html-attribution').hide();
         };
         $('.attribution').toggleClass('instagram');
