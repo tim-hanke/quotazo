@@ -56,15 +56,6 @@ function buildShareLink (image, quote) {
     return `https://tim-hanke.github.io/quotazo/index.html?${formatQueryParams(searchParams)}`;
 }
 
-function updateOpenGraph(link) {
-    // so, facebook doesn't read javascript when scraping, so this
-    // update is currently irrelevant
-    // I'm leaving it in case that changes
-    $('.og-url').attr('content', link);
-    const imageURL = $('.quotazo-image').attr("src");
-    $('.og-image').attr('content', imageURL);
-}
-
 function buildEmail(link) {
     const emailParams = {
         subject: "Check out this Quotazo!",
@@ -150,7 +141,6 @@ function buildQuotazo(image, quote) {
     buildCaption(image, quote);
     buildDownload();
     const shareLink = buildShareLink(image, quote);
-    updateOpenGraph(shareLink);
     buildEmail(shareLink);
     buildFacebook(shareLink);
     buildLinkedIn(shareLink);
@@ -174,7 +164,6 @@ async function fetchUnsplashImage(url) {
         username:"",
         userinstagram: "",
         description:"",
-        // bdrColor: ""
     }    
     await fetch(url, options)
     .then(response => {
@@ -196,8 +185,6 @@ async function fetchUnsplashImage(url) {
         showErrorImage();
     })    
     return image;
-    // the function returns just the data I use, instead of the
-    // whole json response
 }    
 
 // we search unsplash using the quote string we retrieved
