@@ -109,8 +109,8 @@ function getSizingString() {
     const params = {
         fm: "jpg",
         auto: "format",
-        w: "1080",
-        ar: "1:1",
+        w: "1920",
+        ar: "16:9",
         fit: "crop",
         crop: "entropy",
     }    
